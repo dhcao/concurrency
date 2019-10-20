@@ -11,7 +11,7 @@ import org.dhcao.relax.cacheDemo.Computable;
 
 /**
  * 基于FutureTask的缓存类
- * FutureTask的特性：如果某个操作已经开始，则等待其结果返回，线程阻塞；弥补类Memoizer2的缺陷
+ * FutureTask的特性：如果某个操作已经开始，则等待其结果返回，线程阻塞；
  * @Author: dhcao
  * @Version: 1.0
  */
@@ -32,6 +32,8 @@ public class Memoizer<A, V> implements Computable<A, V> {
      * @throws Exception
      */
     public V compute(final A arg) throws Exception {
+
+        // 循环获取，是为了防止，在执行callback中获取值失败；
         while (true){
             Future<V> f = cache.get(arg);
             if (f == null) {
