@@ -2,6 +2,7 @@ package org.dhcao.relax.cacheDemo.demoFinal;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -25,38 +26,37 @@ public class Memoizer<A, V> implements Computable<A, V> {
     }
 
     /**
-     * Memoizer3的终结版本；cache.putIfAbsent()原子操作，避免了3中微弱的get和put的静态条件出现；
+     * Memoizer3的终结版本；cache.putIfAbsent()原子操作，避免了3中微弱的get和put的竞态条件出现；
      * @param arg
      * @return
      * @throws Exception
      */
     public V compute(final A arg) throws Exception {
-
-        // 1. 获取到对应的Future
-        Future<V> f = cache.get(arg);
-
-        // 2. 如果我们获取到了一个空的Future，代表该key是新的，我们创建一个新的Future
-        if (f == null) {
-
-            // 2.1 创建一个新的Callable（Future依赖于此），它将计算compute(A)的值
-            Callable<V> var = new Callable<V>() {
-                public V call() throws Exception {
-                    return c.compute(arg);
+        while (true){
+            Future<V> f = cache.get(arg);
+            if (f == null) {
+                Callable<V> var = new Callable<V>() {
+                    @Override
+                    public V call() throws Exception {
+                        return c.compute(arg);
+                    }
+                };
+                FutureTask<V> ft = new FutureTask<>(var);
+                f = cache.putIfAbsent(arg, ft);
+                if (f == null) {
+                    f = ft;
+                    ft.run();
                 }
-            };
+            }
 
-            // 2.2 创建一个var回调回来的Future；
-            FutureTask<V> ft = new FutureTask<V>(var);
-            f = cache.putIfAbsent(arg, ft);
-            cache.put(arg, f);
+            try{
+                return f.get();
+            } catch (CancellationException e){
+                cache.remove(arg, f);
+            } catch (ExecutionException ex){
+                throw ex;
+            }
 
-            // run方法将执行call方法。
-            ft.run();
-        }
-        try{
-            return f.get();
-        } catch (ExecutionException e){
-            throw e;
         }
 
     }
