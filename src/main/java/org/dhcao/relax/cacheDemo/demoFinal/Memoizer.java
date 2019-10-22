@@ -27,6 +27,7 @@ public class Memoizer<A, V> implements Computable<A, V> {
 
     /**
      * Memoizer3的终结版本；cache.putIfAbsent()原子操作，避免了3中微弱的get和put的竞态条件出现；
+     * 这也是个Callable和Future接口的好例子；
      * @param arg
      * @return
      * @throws Exception
