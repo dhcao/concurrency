@@ -30,10 +30,4 @@ public class CancellingExecutor extends ThreadPoolExecutor {
         return super.newTaskFor(callable);
     }
 
-    /**
-     * 实现CancellabledTask
-     */
-    public abstract class SocketUsingTask<T> implements CancellableTask<T> {
-        // todo
-    }
 }
