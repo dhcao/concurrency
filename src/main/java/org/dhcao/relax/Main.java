@@ -8,10 +8,17 @@ package org.dhcao.relax;
 public class Main {
 
     public static void main(String[] args) {
-        int count = Integer.SIZE - 3;
-        System.out.println(count);
-        System.out.println((1 << count) - 1);
-        System.out.println(-1 << count);
-        System.out.println(0 << count);
+
+
+         Runtime.getRuntime().addShutdownHook(new Thread(){
+             @Override
+             public void run() {
+                 System.out.println("主程序关闭了，来触发关闭钩子，钩子线程：" + Thread.currentThread().getName());
+             }
+         });
+
+        System.out.println(Thread.currentThread().getName() + " 运行完毕");
+
+
     }
 }
