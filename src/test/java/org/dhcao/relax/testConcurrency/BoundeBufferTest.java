@@ -46,6 +46,12 @@ public class BoundeBufferTest {
                   // 如果执行到这一步，说明没有阻塞，那么失败了
                   fail();
               } catch (InterruptedException success){
+                  try {
+                      throw success;
+                  } catch (InterruptedException e) {
+                      e.printStackTrace();
+                  }
+              } finally{
                   System.out.println("++++++++");
               }
           }
