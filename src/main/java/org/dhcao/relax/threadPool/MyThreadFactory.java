@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -75,7 +74,7 @@ class MyAppThread extends Thread{
 
         super(runnable, name + "-" + created.incrementAndGet());
         setUncaughtExceptionHandler((Thread t, Throwable throwable) -> {
-                 log.log(Level.SEVERE,"UNCAUGHT in thread " + t.getName(), throwable);
+            System.out.println("UNCAUGHT in thread " + t.getName() + " " + throwable);
                 }
         );
     }
@@ -98,6 +97,12 @@ class MyAppThread extends Thread{
                 System.out.println("Exiting " + getName());
             }
         }
+    }
+
+    @Override
+    public void interrupt() {
+        System.out.println(Thread.currentThread().getName() + ":  interrupt");
+        super.interrupt();
     }
 
     public static int getThreadsCreated(){
