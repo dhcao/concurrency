@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 测试线程中断
  * @Author: dhcao
  * @Version: 1.0
  */
